@@ -1,35 +1,5 @@
 import styled, { keyframes, css } from "styled-components";
 
-const swapTopToBottom = keyframes`
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-`;
-
-const swapBottomToTop = keyframes`
-  0% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-  50% {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(0);
-    opacity: 1;
-  }
-`;
-
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -96,8 +66,11 @@ export const TokenInput = styled.div<{
   border-radius: 20px;
   padding: 1.2rem;
   cursor: ${(props) => (props.$isOutput ? "default" : "text")};
-  border: 2px solid ${(props) =>
-    props.$isOutput ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)"};
+  border: 2px solid
+    ${(props) =>
+      props.$isOutput
+        ? "rgba(255, 255, 255, 0.1)"
+        : "rgba(255, 255, 255, 0.2)"};
   transition: all 0.2s ease-in-out;
   display: flex;
   align-items: center;
@@ -106,7 +79,9 @@ export const TokenInput = styled.div<{
 
   &:hover {
     border-color: ${(props) =>
-      props.$isOutput ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.3)"};
+      props.$isOutput
+        ? "rgba(255, 255, 255, 0.1)"
+        : "rgba(255, 255, 255, 0.3)"};
     background: ${(props) =>
       props.$isOutput ? "rgba(26, 188, 156, 0.1)" : "rgba(26, 188, 156, 0.3)"};
   }
@@ -159,7 +134,6 @@ export const TokenSelector = styled.button`
 
   &:hover {
     background: rgba(26, 188, 156, 0.3);
-    transform: translateY(-50%) scale(1.02);
   }
 
   &[aria-expanded="true"] svg {

@@ -215,7 +215,7 @@ const CurrencySwap: React.FC = () => {
       ))}
     </>
   );
-  console.log("is Swapping", isSwapping);
+
   return (
     <SwapContainer>
       <Title>Swap Currencies</Title>
