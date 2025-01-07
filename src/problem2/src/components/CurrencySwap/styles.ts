@@ -62,12 +62,14 @@ export const shimmerAnimation = keyframes`
 `;
 
 export const SwapContainer = styled.div`
-  max-width: 480px;
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 2rem;
-  background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+  background: linear-gradient(135deg, #1e5631 0%, #2d8a4e 100%);
   border-radius: 24px;
   color: white;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 `;
 
 export const Title = styled.h1`
@@ -90,63 +92,51 @@ export const TokenInput = styled.div<{
 }>`
   position: relative;
   background: ${(props) =>
-    props.$isOutput ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.2)"};
+    props.$isOutput ? "rgba(26, 188, 156, 0.1)" : "rgba(26, 188, 156, 0.25)"};
   border-radius: 20px;
-  padding: 1rem;
-  opacity: ${(props) => (props.$isOutput ? 0.9 : 1)};
+  padding: 1.2rem;
   cursor: ${(props) => (props.$isOutput ? "default" : "text")};
-  border: ${(props) =>
-    props.$isOutput
-      ? "1px solid rgba(255, 255, 255, 0.1)"
-      : "2px solid rgba(255, 255, 255, 0.3)"};
-  box-shadow: ${(props) =>
-    props.$isOutput ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"};
-  transition: all 0.2s ease;
+  border: 2px solid ${(props) =>
+    props.$isOutput ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.2)"};
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 
-  &:focus-within {
+  &:hover {
     border-color: ${(props) =>
-      props.$isOutput
-        ? "rgba(255, 255, 255, 0.15)"
-        : "rgba(255, 255, 255, 0.4)"};
-    box-shadow: ${(props) =>
-      props.$isOutput ? "none" : "0 4px 16px rgba(0, 0, 0, 0.15)"};
+      props.$isOutput ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.3)"};
+    background: ${(props) =>
+      props.$isOutput ? "rgba(26, 188, 156, 0.1)" : "rgba(26, 188, 156, 0.3)"};
   }
 
-  animation: ${(props) =>
-    props.$isSwapping
-      ? props.$isTop
-        ? css`
-            ${swapTopToBottom} 0.5s ease
-          `
-        : css`
-            ${swapBottomToTop} 0.5s ease
-          `
-      : "none"};
+  &:focus-within {
+    border-color: rgba(26, 188, 156, 0.5);
+    box-shadow: 0 0 0 2px rgba(26, 188, 156, 0.2);
+  }
 `;
 
 export const Input = styled.input`
-  width: calc(100% - 120px);
-  min-width: 100px;
+  flex: 1;
+  background: transparent;
   border: none;
-  background: none;
+  color: white;
   font-size: 40px;
   font-weight: ${(props) => (props.readOnly ? "400" : "600")};
-  color: white;
   outline: none;
-  padding: 0;
+  padding: 8px 0;
   opacity: ${(props) => (props.readOnly ? 0.7 : 1)};
   cursor: ${(props) => (props.readOnly ? "default" : "text")};
-  transition: all 0.2s ease;
+  min-width: 0;
 
   &::placeholder {
-    color: ${(props) =>
-      props.readOnly ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.6)"};
+    color: rgba(255, 255, 255, 0.5);
     font-weight: 400;
   }
 
   &:focus::placeholder {
-    color: ${(props) =>
-      props.readOnly ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.7)"};
+    color: rgba(255, 255, 255, 0.3);
   }
 `;
 
@@ -155,23 +145,20 @@ export const TokenSelector = styled.button`
   align-items: center;
   gap: 8px;
   padding: 8px 16px;
-  background: rgba(255, 255, 255, 0.15);
+  background: rgba(26, 188, 156, 0.2);
   border: none;
   border-radius: 100px;
   cursor: pointer;
   transition: all 0.2s ease;
   color: white;
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
+  flex-shrink: 0;
 
   svg {
     transition: transform 0.3s ease;
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(26, 188, 156, 0.3);
     transform: translateY(-50%) scale(1.02);
   }
 
@@ -197,15 +184,15 @@ export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
   height: 48px;
   padding: 12px;
   margin: -28px auto;
-  background: #1e3a8a;
-  border: 2px solid #1e40af;
+  background: #1abc9c;
+  border: 2px solid #16a085;
   border-radius: 50%;
   position: relative;
   cursor: pointer;
   z-index: 1;
   color: white;
   transition: all 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 
   svg {
     position: absolute;
@@ -220,10 +207,10 @@ export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
   }
 
   &:hover {
-    background: #1e40af;
-    border-color: #1e4ed8;
+    background: #16a085;
+    border-color: #1abc9c;
     transform: rotate(180deg);
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
   }
 
   &:disabled {
@@ -236,7 +223,7 @@ export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
 export const SwapButton = styled.button<{ $isLoading?: boolean }>`
   width: 100%;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: #1abc9c;
   color: white;
   border: none;
   border-radius: 16px;
@@ -252,7 +239,9 @@ export const SwapButton = styled.button<{ $isLoading?: boolean }>`
   opacity: ${(props) => (props.$isLoading ? 0.7 : 1)};
 
   &:hover:not(:disabled) {
-    background: rgba(255, 255, 255, 0.15);
+    background: #16a085;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   }
 
   &:disabled {
@@ -266,7 +255,7 @@ export const TokenList = styled.div<{ $isClosing?: boolean }>`
   top: 100%;
   left: 0;
   right: 0;
-  background: rgba(30, 58, 138, 0.95);
+  background: #1e5631;
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   margin-top: 8px;
@@ -274,7 +263,6 @@ export const TokenList = styled.div<{ $isClosing?: boolean }>`
   overflow-y: auto;
   z-index: 10;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(12px);
   animation: ${(props) => (props.$isClosing ? fadeOut : fadeIn)} 0.3s ease;
   transform-origin: top center;
   scrollbar-width: thin;
@@ -344,7 +332,7 @@ export const TokenOption = styled.button`
   gap: 12px;
   padding: 16px;
   border: none;
-  background: none;
+  background: #1e5631;
   cursor: pointer;
   transition: all 0.2s ease;
   color: white;
@@ -357,7 +345,7 @@ export const TokenOption = styled.button`
     left: 16px;
     right: 16px;
     height: 1px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(26, 188, 156, 0.1);
   }
 
   &:last-child:after {
@@ -365,11 +353,11 @@ export const TokenOption = styled.button`
   }
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: #2d8a4e;
   }
 
   &:active {
-    background: rgba(255, 255, 255, 0.15);
+    background: #246e3f;
   }
 `;
 
@@ -420,7 +408,7 @@ export const OutputSection = styled.div`
   flex-direction: column;
   gap: 8px;
   padding: 16px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(26, 188, 156, 0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
 `;
