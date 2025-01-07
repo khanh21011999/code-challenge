@@ -61,7 +61,7 @@ const fadeOut = keyframes`
   }
 `;
 
-const shimmer = keyframes`
+export const shimmerAnimation = keyframes`
   0% {
     background-position: -100% 0;
   }
@@ -275,6 +275,44 @@ export const TokenList = styled.div<{ $isClosing?: boolean }>`
   }
 `;
 
+export const ShimmerDiv = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 8px 0;
+
+  &::before {
+    content: "";
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 25%,
+      rgba(229, 231, 235, 0.2) 50%,
+      rgba(255, 255, 255, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: ${shimmerAnimation} 1s infinite linear;
+  }
+
+  &::after {
+    content: "";
+    flex: 1;
+    height: 24px;
+    border-radius: 4px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.1) 25%,
+      rgba(229, 231, 235, 0.2) 50%,
+      rgba(255, 255, 255, 0.1) 75%
+    );
+    background-size: 200% 100%;
+    animation: ${shimmerAnimation} 1s infinite linear;
+  }
+`;
+
 export const TokenOption = styled.button`
   width: 100%;
   display: flex;
@@ -346,7 +384,7 @@ export const OutputValue = styled.div<{ $isLoading?: boolean }>`
         rgba(243, 244, 246, 0.1) 75%
       );
       background-size: 150% 100%;
-      animation: ${shimmer} 1s infinite linear;
+      animation: ${shimmerAnimation} 1s infinite linear;
       border-radius: 4px;
       color: transparent;
       width: 60%;

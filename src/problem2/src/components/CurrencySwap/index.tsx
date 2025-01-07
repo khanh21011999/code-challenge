@@ -16,6 +16,7 @@ import {
   TokenOption,
   PriceInfo,
   OutputValue,
+  ShimmerDiv,
 } from "./styles";
 
 interface Token {
@@ -40,11 +41,13 @@ const CurrencySwap: React.FC = () => {
   const [showFromTokens, setShowFromTokens] = useState<boolean>(false);
   const [showToTokens, setShowToTokens] = useState<boolean>(false);
   const [isSwapping, setIsSwapping] = useState(false);
-  const [outputLoading, setOutputLoading] = useState(false);
   const [swapAnimation, setSwapAnimation] = useState(false);
   const [closingDropdown, setClosingDropdown] = useState<"from" | "to" | null>(
     null
   );
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
+  const [filteredTokens, setFilteredTokens] = useState<TokenData>({});
 
   const formatNumber = (value: string) => {
     const num = parseFloat(value);
@@ -55,6 +58,39 @@ const CurrencySwap: React.FC = () => {
   useEffect(() => {
     fetchTokens();
   }, []);
+
+  useEffect(() => {
+    const handleSearch = async () => {
+      setIsSearching(true);
+      setFilteredTokens({});
+
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      const filtered = Object.entries(tokens).reduce(
+        (acc, [currency, data]) => {
+          if (currency.toLowerCase().includes(searchQuery.toLowerCase())) {
+            acc[currency] = data;
+          }
+          return acc;
+        },
+        {} as TokenData
+      );
+
+      setFilteredTokens(filtered);
+      setIsSearching(false);
+    };
+
+    const debounceTimeout = setTimeout(() => {
+      if (searchQuery) {
+        handleSearch();
+      } else {
+        setFilteredTokens(tokens);
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery, tokens]);
 
   useEffect(() => {
     if (Object.keys(tokens).length > 0) {
@@ -92,7 +128,6 @@ const CurrencySwap: React.FC = () => {
   const handleSwap = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSwapping(true);
-    setOutputLoading(true);
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
@@ -105,7 +140,6 @@ const CurrencySwap: React.FC = () => {
     }
 
     setIsSwapping(false);
-    setOutputLoading(false);
   };
 
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -134,9 +168,8 @@ const CurrencySwap: React.FC = () => {
   };
 
   const switchTokens = async () => {
-    if (isSwapping) return;
+    if (isSwapping || showFromTokens || showToTokens) return;
 
-    setOutputLoading(true);
     setIsSwapping(true);
     setSwapAnimation(true);
 
@@ -158,7 +191,6 @@ const CurrencySwap: React.FC = () => {
     }
 
     setSwapAnimation(false);
-    setOutputLoading(false);
     setIsSwapping(false);
   };
 
@@ -174,6 +206,16 @@ const CurrencySwap: React.FC = () => {
     );
   };
 
+  const ShimmerLoadingOption = () => (
+    <>
+      {[1, 2, 3, 4].map((index) => (
+        <TokenOption key={index} as="div" style={{ cursor: "default" }}>
+          <ShimmerDiv />
+        </TokenOption>
+      ))}
+    </>
+  );
+  console.log("is Swapping", isSwapping);
   return (
     <SwapContainer>
       <Title>Swap Currencies</Title>
@@ -186,7 +228,8 @@ const CurrencySwap: React.FC = () => {
             onChange={handleAmountChange}
           />
           <TokenSelector
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               if (showToTokens) {
                 setClosingDropdown("to");
                 setTimeout(() => {
@@ -211,22 +254,52 @@ const CurrencySwap: React.FC = () => {
           </TokenSelector>
           {(showFromTokens || closingDropdown === "from") && (
             <TokenList $isClosing={closingDropdown === "from"}>
-              {Object.entries(tokens).map(([currency]) => (
-                <TokenOption
-                  key={currency}
-                  onClick={() => {
-                    setFromToken(currency);
-                    setClosingDropdown("from");
-                    setTimeout(() => {
-                      setShowFromTokens(false);
-                      setClosingDropdown(null);
-                    }, 300);
-                  }}
-                >
-                  <TokenImage src={getTokenImage(currency)} alt={currency} />
-                  <TokenSymbol>{currency}</TokenSymbol>
-                </TokenOption>
-              ))}
+              <Input
+                type="text"
+                placeholder="Search tokens..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  fontSize: "16px",
+                  margin: "8px",
+                  width: "calc(100% - 16px)",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "8px",
+                  padding: "8px",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              />
+              {isSearching ? (
+                <ShimmerLoadingOption />
+              ) : (
+                Object.entries(filteredTokens).map(([currency]) => {
+                  return (
+                    <TokenOption
+                      key={currency}
+                      onClick={() => {
+                        const rate =
+                          tokens[currency].price / tokens[toToken].price;
+                        const result = amount
+                          ? formatNumber((parseFloat(amount) * rate).toString())
+                          : "0.0";
+                        setFromToken(currency);
+                        setOutputAmount(result);
+                        setClosingDropdown("from");
+                        setTimeout(() => {
+                          setShowFromTokens(false);
+                          setClosingDropdown(null);
+                        }, 300);
+                      }}
+                    >
+                      <TokenImage
+                        src={getTokenImage(currency)}
+                        alt={currency}
+                      />
+                      <TokenSymbol>{currency}</TokenSymbol>
+                    </TokenOption>
+                  );
+                })
+              )}
             </TokenList>
           )}
         </TokenInput>
@@ -240,10 +313,11 @@ const CurrencySwap: React.FC = () => {
           <MdSwapVert size={32} />
         </SwapIcon>
 
-        <TokenInput $isOutput $isSwapping={swapAnimation}>
-          <OutputValue $isLoading={outputLoading}>{outputAmount}</OutputValue>
+        <TokenInput $isOutput>
+          <OutputValue $isLoading={isSwapping}>{outputAmount}</OutputValue>
           <TokenSelector
-            onClick={() => {
+            onClick={(e) => {
+              e.preventDefault();
               if (showFromTokens) {
                 setClosingDropdown("from");
                 setTimeout(() => {
@@ -268,22 +342,52 @@ const CurrencySwap: React.FC = () => {
           </TokenSelector>
           {(showToTokens || closingDropdown === "to") && (
             <TokenList $isClosing={closingDropdown === "to"}>
-              {Object.entries(tokens).map(([currency]) => (
-                <TokenOption
-                  key={currency}
-                  onClick={() => {
-                    setToToken(currency);
-                    setClosingDropdown("to");
-                    setTimeout(() => {
-                      setShowToTokens(false);
-                      setClosingDropdown(null);
-                    }, 300);
-                  }}
-                >
-                  <TokenImage src={getTokenImage(currency)} alt={currency} />
-                  <TokenSymbol>{currency}</TokenSymbol>
-                </TokenOption>
-              ))}
+              <Input
+                type="text"
+                placeholder="Search tokens..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                style={{
+                  fontSize: "16px",
+                  margin: "8px",
+                  width: "calc(100% - 16px)",
+                  background: "rgba(255, 255, 255, 0.1)",
+                  borderRadius: "8px",
+                  padding: "8px",
+                }}
+                onClick={(e) => e.stopPropagation()}
+              />
+              {isSearching ? (
+                <ShimmerLoadingOption />
+              ) : (
+                Object.entries(filteredTokens).map(([currency]) => {
+                  return (
+                    <TokenOption
+                      key={currency}
+                      onClick={() => {
+                        const rate =
+                          tokens[fromToken].price / tokens[currency].price;
+                        const result = amount
+                          ? formatNumber((parseFloat(amount) * rate).toString())
+                          : "0.0";
+                        setToToken(currency);
+                        setOutputAmount(result);
+                        setClosingDropdown("to");
+                        setTimeout(() => {
+                          setShowToTokens(false);
+                          setClosingDropdown(null);
+                        }, 300);
+                      }}
+                    >
+                      <TokenImage
+                        src={getTokenImage(currency)}
+                        alt={currency}
+                      />
+                      <TokenSymbol>{currency}</TokenSymbol>
+                    </TokenOption>
+                  );
+                })
+              )}
             </TokenList>
           )}
         </TokenInput>

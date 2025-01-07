@@ -1,15 +1,16 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
-import CurrencySwap from './components/CurrencySwap';
+import "./App.css";
+import CurrencySwap from "./components/CurrencySwap";
+import { GlobalStyles } from "./styles/GlobalStyles";
 
 function App() {
   return (
-    <div className="App">
-      <CurrencySwap />
-    </div>
+    <>
+      <GlobalStyles />
+      <div className="App">
+        <CurrencySwap />
+      </div>
+    </>
   );
 }
 
-export default App
+export default App;
