@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { MdSwapVert, MdKeyboardArrowDown } from "react-icons/md";
 import {
@@ -17,6 +17,7 @@ import {
   PriceInfo,
   OutputValue,
   ShimmerDiv,
+  NoResults,
 } from "./styles";
 
 interface Token {
@@ -48,6 +49,40 @@ const CurrencySwap: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearching, setIsSearching] = useState(false);
   const [filteredTokens, setFilteredTokens] = useState<TokenData>({});
+  const fromTokenRef = useRef<HTMLDivElement>(null);
+  const toTokenRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        fromTokenRef.current &&
+        !fromTokenRef.current.contains(event.target as Node) &&
+        showFromTokens
+      ) {
+        setClosingDropdown("from");
+        setTimeout(() => {
+          setShowFromTokens(false);
+          setClosingDropdown(null);
+        }, 300);
+      }
+      if (
+        toTokenRef.current &&
+        !toTokenRef.current.contains(event.target as Node) &&
+        showToTokens
+      ) {
+        setClosingDropdown("to");
+        setTimeout(() => {
+          setShowToTokens(false);
+          setClosingDropdown(null);
+        }, 300);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showFromTokens, showToTokens]);
 
   const formatNumber = (value: string) => {
     const num = parseFloat(value);
@@ -178,14 +213,14 @@ const CurrencySwap: React.FC = () => {
     const tempToken = fromToken;
     setFromToken(toToken);
     setToToken(tempToken);
-    setAmount(outputAmount);
+    const currentAmount = amount;
 
     await new Promise((resolve) => setTimeout(resolve, 250));
 
-    const rate = calculateExchangeRate();
-    if (rate && outputAmount) {
+    const rate = tokens[toToken].price / tokens[fromToken].price;
+    if (rate && currentAmount) {
       const result = formatNumber(
-        (parseFloat(outputAmount) * parseFloat(rate)).toString()
+        (parseFloat(currentAmount) * rate).toString()
       );
       setOutputAmount(result);
     }
@@ -220,7 +255,7 @@ const CurrencySwap: React.FC = () => {
     <SwapContainer>
       <Title>Swap Currencies</Title>
       <SwapForm onSubmit={handleSwap}>
-        <TokenInput $isSwapping={swapAnimation} $isTop>
+        <TokenInput ref={fromTokenRef} $isSwapping={swapAnimation} $isTop>
           <Input
             type="text"
             placeholder="0.0"
@@ -271,6 +306,8 @@ const CurrencySwap: React.FC = () => {
               />
               {isSearching ? (
                 <ShimmerLoadingOption />
+              ) : Object.keys(filteredTokens).length === 0 ? (
+                <NoResults>No tokens found</NoResults>
               ) : (
                 Object.entries(filteredTokens).map(([currency]) => {
                   return (
@@ -313,7 +350,7 @@ const CurrencySwap: React.FC = () => {
           <MdSwapVert size={32} />
         </SwapIcon>
 
-        <TokenInput $isOutput>
+        <TokenInput ref={toTokenRef} $isOutput>
           <OutputValue $isLoading={isSwapping}>{outputAmount}</OutputValue>
           <TokenSelector
             onClick={(e) => {
@@ -359,6 +396,8 @@ const CurrencySwap: React.FC = () => {
               />
               {isSearching ? (
                 <ShimmerLoadingOption />
+              ) : Object.keys(filteredTokens).length === 0 ? (
+                <NoResults>No tokens found</NoResults>
               ) : (
                 Object.entries(filteredTokens).map(([currency]) => {
                   return (

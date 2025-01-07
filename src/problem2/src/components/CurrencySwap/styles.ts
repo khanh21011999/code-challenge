@@ -32,14 +32,22 @@ export const shimmerAnimation = keyframes`
 `;
 
 export const SwapContainer = styled.div`
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 2rem;
+  width: 90%;
+  max-width: 480px;
+  margin: 1rem auto;
+  padding: 1.5rem;
   background: linear-gradient(135deg, #1e5631 0%, #2d8a4e 100%);
   border-radius: 24px;
   color: white;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.1);
+
+  @media (max-width: 480px) {
+    width: 92%;
+    padding: 1.25rem;
+    margin: 0.75rem auto;
+    border-radius: 16px;
+  }
 `;
 
 export const Title = styled.h1`
@@ -47,15 +55,24 @@ export const Title = styled.h1`
   color: white;
   margin-bottom: 2rem;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 20px;
+    margin-bottom: 1.5rem;
+  }
 `;
 
 export const SwapForm = styled.form`
   display: flex;
   flex-direction: column;
   gap: 16px;
+
+  @media (max-width: 480px) {
+    gap: 14px;
+  }
 `;
 
-export const TokenInput = styled.div<{
+export const TokenInput = styled.div.attrs({ tabIndex: -1 })<{
   $isOutput?: boolean;
   $isSwapping?: boolean;
   $isTop?: boolean;
@@ -66,16 +83,19 @@ export const TokenInput = styled.div<{
   border-radius: 20px;
   padding: 1.2rem;
   cursor: ${(props) => (props.$isOutput ? "default" : "text")};
-  border: 2px solid
-    ${(props) =>
-      props.$isOutput
-        ? "rgba(255, 255, 255, 0.1)"
-        : "rgba(255, 255, 255, 0.2)"};
+  border: ${(props) =>
+    props.$isOutput ? "none" : "2px solid rgba(255, 255, 255, 0.2)"};
   transition: all 0.2s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+
+  @media (max-width: 480px) {
+    padding: 1.1rem;
+    border-radius: 14px;
+    gap: 8px;
+  }
 
   &:hover {
     border-color: ${(props) =>
@@ -97,13 +117,18 @@ export const Input = styled.input`
   background: transparent;
   border: none;
   color: white;
-  font-size: 40px;
+  font-size: 32px;
   font-weight: ${(props) => (props.readOnly ? "400" : "600")};
   outline: none;
   padding: 8px 0;
   opacity: ${(props) => (props.readOnly ? 0.7 : 1)};
   cursor: ${(props) => (props.readOnly ? "default" : "text")};
   min-width: 0;
+
+  @media (max-width: 480px) {
+    font-size: 22px;
+    padding: 4px 0;
+  }
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.5);
@@ -119,7 +144,7 @@ export const TokenSelector = styled.button`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 16px;
+  padding: 8px 12px;
   background: rgba(26, 188, 156, 0.2);
   border: none;
   border-radius: 100px;
@@ -127,6 +152,11 @@ export const TokenSelector = styled.button`
   transition: all 0.2s ease;
   color: white;
   flex-shrink: 0;
+
+  @media (max-width: 480px) {
+    padding: 6px 10px;
+    gap: 6px;
+  }
 
   svg {
     transition: transform 0.3s ease;
@@ -145,19 +175,28 @@ export const TokenImage = styled.img`
   width: 24px;
   height: 24px;
   border-radius: 50%;
+
+  @media (max-width: 480px) {
+    width: 20px;
+    height: 20px;
+  }
 `;
 
 export const TokenSymbol = styled.span`
   font-size: 18px;
   font-weight: 500;
   color: white;
+
+  @media (max-width: 480px) {
+    font-size: 16px;
+  }
 `;
 
 export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
   width: 48px;
   height: 48px;
   padding: 12px;
-  margin: -28px auto;
+  margin: -24px auto;
   background: #1abc9c;
   border: 2px solid #16a085;
   border-radius: 50%;
@@ -167,6 +206,13 @@ export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
   color: white;
   transition: all 0.3s ease, transform 0.3s ease;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+
+  @media (max-width: 480px) {
+    width: 40px;
+    height: 40px;
+    padding: 10px;
+    margin: -20px auto;
+  }
 
   svg {
     position: absolute;
@@ -212,6 +258,13 @@ export const SwapButton = styled.button<{ $isLoading?: boolean }>`
   gap: 8px;
   opacity: ${(props) => (props.$isLoading ? 0.7 : 1)};
 
+  @media (max-width: 480px) {
+    padding: 16px;
+    font-size: 16px;
+    margin-top: 14px;
+    border-radius: 12px;
+  }
+
   &:hover:not(:disabled) {
     background: #16a085;
     transform: translateY(-1px);
@@ -225,22 +278,34 @@ export const SwapButton = styled.button<{ $isLoading?: boolean }>`
 `;
 
 export const TokenList = styled.div<{ $isClosing?: boolean }>`
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
+  position: fixed;
+  inset: auto 0 0;
   background: #1e5631;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  margin-top: 8px;
-  max-height: 300px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px 24px 0 0;
+  height: 400px;
   overflow-y: auto;
-  z-index: 10;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  box-shadow: 0 -8px 32px rgba(0, 0, 0, 0.4);
   animation: ${(props) => (props.$isClosing ? fadeOut : fadeIn)} 0.3s ease;
-  transform-origin: top center;
+  transform-origin: bottom center;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  padding: 1rem 0;
+
+  @media (min-width: 481px) {
+    position: absolute;
+    top: calc(100% + 8px);
+    bottom: auto;
+    left: 0;
+    right: 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    max-height: 300px;
+    transform-origin: top center;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    padding: 0.5rem 0;
+  }
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -299,6 +364,18 @@ export const ShimmerDiv = styled.div`
   }
 `;
 
+export const NoResults = styled.div`
+  color: rgba(255, 255, 255, 0.7);
+  text-align: center;
+  padding: 2rem 1rem;
+  font-size: 16px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    padding: 1.5rem 1rem;
+  }
+`;
+
 export const TokenOption = styled.button`
   width: 100%;
   display: flex;
@@ -306,11 +383,16 @@ export const TokenOption = styled.button`
   gap: 12px;
   padding: 16px;
   border: none;
-  background: #1e5631;
+  background: transparent;
   cursor: pointer;
   transition: all 0.2s ease;
   color: white;
   position: relative;
+
+  @media (max-width: 480px) {
+    padding: 16px;
+    gap: 12px;
+  }
 
   &:after {
     content: "";
@@ -327,11 +409,11 @@ export const TokenOption = styled.button`
   }
 
   &:hover {
-    background: #2d8a4e;
+    background: rgba(26, 188, 156, 0.1);
   }
 
   &:active {
-    background: #246e3f;
+    background: rgba(26, 188, 156, 0.2);
   }
 `;
 
@@ -340,6 +422,11 @@ export const PriceInfo = styled.div`
   font-size: 16px;
   text-align: center;
   margin-top: 16px;
+
+  @media (max-width: 480px) {
+    font-size: 14px;
+    margin-top: 12px;
+  }
 `;
 
 export const ErrorMessage = styled.div`
@@ -347,18 +434,28 @@ export const ErrorMessage = styled.div`
   font-size: 14px;
   margin-top: 8px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    margin-top: 8px;
+  }
 `;
 
 export const OutputValue = styled.div<{ $isLoading?: boolean }>`
   width: calc(100% - 120px);
   min-width: 100px;
-  font-size: 40px;
+  font-size: 32px;
   font-weight: 500;
   color: white;
   padding: 0;
   margin: 0;
   transition: all 0.3s ease;
   text-align: left;
+
+  @media (max-width: 480px) {
+    font-size: 22px;
+    width: calc(100% - 90px);
+  }
 
   ${(props) =>
     props.$isLoading &&
@@ -385,12 +482,21 @@ export const OutputSection = styled.div`
   background: rgba(26, 188, 156, 0.1);
   border-radius: 16px;
   backdrop-filter: blur(10px);
+
+  @media (max-width: 480px) {
+    padding: 14px;
+    gap: 6px;
+  }
 `;
 
 export const OutputHeader = styled.div`
   font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
   font-weight: 500;
+
+  @media (max-width: 480px) {
+    font-size: 13px;
+  }
 `;
 
 export const OutputContent = styled.div`
@@ -398,6 +504,10 @@ export const OutputContent = styled.div`
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+
+  @media (max-width: 480px) {
+    gap: 8px;
+  }
 `;
 
 export const OutputAmount = styled.div<{ $isLoading?: boolean }>`
@@ -406,6 +516,10 @@ export const OutputAmount = styled.div<{ $isLoading?: boolean }>`
   color: white;
   transition: opacity 0.3s ease;
   opacity: ${({ $isLoading }) => ($isLoading ? 0.7 : 1)};
+
+  @media (max-width: 480px) {
+    font-size: 22px;
+  }
 
   @keyframes pulse {
     0% {
