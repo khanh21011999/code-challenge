@@ -399,7 +399,7 @@ const CurrencySwap: React.FC = () => {
         )}
 
         <SwapButton type="submit" $isLoading={isSwapping}>
-          {isSwapping ? "Swapping..." : "Swap"}
+          {isSwapping ? "Converting..." : "Convert "}
         </SwapButton>
       </SwapForm>
     </SwapContainer>

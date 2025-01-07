@@ -30,15 +30,6 @@ const swapBottomToTop = keyframes`
   }
 `;
 
-const rotateSwap = keyframes`
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(180deg);
-  }
-`;
-
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -98,9 +89,29 @@ export const TokenInput = styled.div<{
   $isTop?: boolean;
 }>`
   position: relative;
-  background: rgba(255, 255, 255, 0.1);
+  background: ${(props) =>
+    props.$isOutput ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.2)"};
   border-radius: 20px;
   padding: 1rem;
+  opacity: ${(props) => (props.$isOutput ? 0.9 : 1)};
+  cursor: ${(props) => (props.$isOutput ? "default" : "text")};
+  border: ${(props) =>
+    props.$isOutput
+      ? "1px solid rgba(255, 255, 255, 0.1)"
+      : "2px solid rgba(255, 255, 255, 0.3)"};
+  box-shadow: ${(props) =>
+    props.$isOutput ? "none" : "0 4px 12px rgba(0, 0, 0, 0.1)"};
+  transition: all 0.2s ease;
+
+  &:focus-within {
+    border-color: ${(props) =>
+      props.$isOutput
+        ? "rgba(255, 255, 255, 0.15)"
+        : "rgba(255, 255, 255, 0.4)"};
+    box-shadow: ${(props) =>
+      props.$isOutput ? "none" : "0 4px 16px rgba(0, 0, 0, 0.15)"};
+  }
+
   animation: ${(props) =>
     props.$isSwapping
       ? props.$isTop
@@ -119,13 +130,23 @@ export const Input = styled.input`
   border: none;
   background: none;
   font-size: 40px;
-  font-weight: 500;
+  font-weight: ${(props) => (props.readOnly ? "400" : "600")};
   color: white;
   outline: none;
   padding: 0;
+  opacity: ${(props) => (props.readOnly ? 0.7 : 1)};
+  cursor: ${(props) => (props.readOnly ? "default" : "text")};
+  transition: all 0.2s ease;
 
   &::placeholder {
-    color: rgba(255, 255, 255, 0.5);
+    color: ${(props) =>
+      props.readOnly ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.6)"};
+    font-weight: 400;
+  }
+
+  &:focus::placeholder {
+    color: ${(props) =>
+      props.readOnly ? "rgba(255, 255, 255, 0.4)" : "rgba(255, 255, 255, 0.7)"};
   }
 `;
 
@@ -176,14 +197,15 @@ export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
   height: 48px;
   padding: 12px;
   margin: -28px auto;
-  background: #f3f4f6;
-  border: none;
+  background: #1e3a8a;
+  border: 2px solid #1e40af;
   border-radius: 50%;
   position: relative;
   cursor: pointer;
   z-index: 1;
-  color: #1e40af;
-  transition: all 0.3s ease;
+  color: white;
+  transition: all 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   svg {
     position: absolute;
@@ -198,8 +220,10 @@ export const SwapIcon = styled.button<{ $isSwapping?: boolean }>`
   }
 
   &:hover {
-    background: white;
-    animation: ${rotateSwap} 0.3s ease forwards;
+    background: #1e40af;
+    border-color: #1e4ed8;
+    transform: rotate(180deg);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
   }
 
   &:disabled {
