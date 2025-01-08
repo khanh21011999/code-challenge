@@ -18,6 +18,7 @@ import {
   OutputValue,
   ShimmerDiv,
   NoResults,
+  ErrorMessage,
 } from "./styles";
 
 interface Token {
@@ -87,7 +88,9 @@ const CurrencySwap: React.FC = () => {
   const formatNumber = (value: string) => {
     const num = parseFloat(value);
     if (isNaN(num) || num === 0) return "0.0";
-    return num.toFixed(3);
+    const [whole, decimal] = num.toString().split(".");
+    if (!decimal) return whole;
+    return `${whole}.${decimal.slice(0, 8)}`;
   };
 
   useEffect(() => {
@@ -166,39 +169,42 @@ const CurrencySwap: React.FC = () => {
 
     await new Promise((resolve) => setTimeout(resolve, 1000));
 
-    const rate = calculateExchangeRate();
+    const rate = tokens[toToken].price / tokens[fromToken].price;
     if (rate && amount) {
-      const result = formatNumber(
-        (parseFloat(amount) * parseFloat(rate)).toString()
-      );
+      const result = formatNumber((parseFloat(amount) * rate).toString());
       setOutputAmount(result);
     }
 
     setIsSwapping(false);
   };
 
+  const [error, setError] = useState<string>("");
+
   const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     if (/^\d*\.?\d*$/.test(value)) {
-      let formattedValue = value;
-      const parts = value.split(".");
+      setAmount(value);
 
-      if (parts[0].length > 5) {
-        parts[0] = parts[0].slice(0, 5);
+      if (value === "") {
+        setError("");
+        setOutputAmount("0.0");
+        return;
       }
 
-      const num = parseInt(parts[0]);
+      const num = parseFloat(value);
       if (num > 10000) {
-        parts[0] = "10000";
+        setError("Maximum value is 10000");
+        return;
       }
 
-      if (parts.length > 1) {
-        formattedValue = parts[0] + "." + parts[1].slice(0, 6);
-      } else {
-        formattedValue = parts[0];
+      if (value.includes(".")) {
+        const [, decimal] = value.split(".");
+        if (decimal && decimal.length > 8) {
+          setError("Maximum 8 decimal places allowed");
+          return;
+        }
       }
-
-      setAmount(formattedValue);
+      setError("");
     }
   };
 
@@ -255,7 +261,12 @@ const CurrencySwap: React.FC = () => {
     <SwapContainer>
       <Title>Swap Currencies</Title>
       <SwapForm onSubmit={handleSwap}>
-        <TokenInput ref={fromTokenRef} $isSwapping={swapAnimation} $isTop>
+        <TokenInput
+          ref={fromTokenRef}
+          $isSwapping={swapAnimation}
+          $isTop
+          $hasError={!!error}
+        >
           <Input
             type="text"
             placeholder="0.0"
@@ -344,7 +355,7 @@ const CurrencySwap: React.FC = () => {
         <SwapIcon
           onClick={switchTokens}
           type="button"
-          disabled={isSwapping}
+          disabled={isSwapping || !!error}
           $isSwapping={swapAnimation}
         >
           <MdSwapVert size={32} />
@@ -437,8 +448,13 @@ const CurrencySwap: React.FC = () => {
           </PriceInfo>
         )}
 
-        <SwapButton type="submit" $isLoading={isSwapping}>
-          {isSwapping ? "Converting..." : "Convert "}
+        <ErrorMessage $isVisible={!!error}>{error}</ErrorMessage>
+        <SwapButton
+          type="submit"
+          $isLoading={isSwapping}
+          disabled={Boolean(error) || amount === "" || isSwapping}
+        >
+          {isSwapping ? "Converting..." : "Convert"}
         </SwapButton>
       </SwapForm>
     </SwapContainer>

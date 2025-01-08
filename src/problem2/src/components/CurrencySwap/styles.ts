@@ -33,7 +33,7 @@ export const shimmerAnimation = keyframes`
 
 export const SwapContainer = styled.div`
   width: 90%;
-  max-width: 480px;
+  width: 560px;
   margin: 1rem auto;
   padding: 1.5rem;
   background: linear-gradient(135deg, #1e5631 0%, #2d8a4e 100%);
@@ -42,7 +42,7 @@ export const SwapContainer = styled.div`
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.1);
 
-  @media (max-width: 480px) {
+  @media (max-width: 560px) {
     width: 92%;
     padding: 1.25rem;
     margin: 0.75rem auto;
@@ -76,6 +76,7 @@ export const TokenInput = styled.div.attrs({ tabIndex: -1 })<{
   $isOutput?: boolean;
   $isSwapping?: boolean;
   $isTop?: boolean;
+  $hasError?: boolean;
 }>`
   position: relative;
   background: ${(props) =>
@@ -84,12 +85,20 @@ export const TokenInput = styled.div.attrs({ tabIndex: -1 })<{
   padding: 1.2rem;
   cursor: ${(props) => (props.$isOutput ? "default" : "text")};
   border: ${(props) =>
-    props.$isOutput ? "none" : "2px solid rgba(255, 255, 255, 0.2)"};
-  transition: all 0.2s ease-in-out;
+    props.$isOutput
+      ? "none"
+      : `2px solid ${
+          props.$hasError
+            ? "rgba(255, 99, 71, 0.8)"
+            : "rgba(255, 255, 255, 0.2)"
+        }`};
+  transition: all 0.3s ease-in-out;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+  width: 100%;
+  max-width: 100%;
 
   @media (max-width: 480px) {
     padding: 1.1rem;
@@ -124,6 +133,10 @@ export const Input = styled.input`
   opacity: ${(props) => (props.readOnly ? 0.7 : 1)};
   cursor: ${(props) => (props.readOnly ? "default" : "text")};
   min-width: 0;
+  max-width: calc(100% - 120px);
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
 
   @media (max-width: 480px) {
     font-size: 22px;
@@ -429,20 +442,53 @@ export const PriceInfo = styled.div`
   }
 `;
 
-export const ErrorMessage = styled.div`
-  color: #ff4d4d;
-  font-size: 14px;
-  margin-top: 8px;
-  text-align: center;
-
-  @media (max-width: 480px) {
-    font-size: 12px;
+const slideDown = keyframes`
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    margin-top: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
     margin-top: 8px;
   }
 `;
 
+const slideUp = keyframes`
+  from {
+    opacity: 1;
+    transform: translateY(0);
+    margin-top: 8px;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+    margin-top: 0;
+  }
+`;
+
+export const ErrorMessage = styled.div<{ $isVisible: boolean }>`
+  color: #ff0000;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  animation: ${(props) => (props.$isVisible ? slideDown : slideUp)} 0.3s ease
+    forwards;
+  height: ${(props) => (props.$isVisible ? "auto" : "0")};
+  overflow: hidden;
+  margin: 0;
+
+  @media (max-width: 480px) {
+    font-size: 12px;
+    padding: 6px 10px;
+  }
+`;
+
 export const OutputValue = styled.div<{ $isLoading?: boolean }>`
-  width: calc(100% - 120px);
+  width: calc(100% - 60px);
   min-width: 100px;
   font-size: 32px;
   font-weight: 500;
@@ -451,6 +497,9 @@ export const OutputValue = styled.div<{ $isLoading?: boolean }>`
   margin: 0;
   transition: all 0.3s ease;
   text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   @media (max-width: 480px) {
     font-size: 22px;
