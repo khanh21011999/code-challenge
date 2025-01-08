@@ -133,7 +133,7 @@ export const Input = styled.input`
   opacity: ${(props) => (props.readOnly ? 0.7 : 1)};
   cursor: ${(props) => (props.readOnly ? "default" : "text")};
   min-width: 0;
-  max-width: calc(100% - 120px);
+  /* max-width: calc(100% - 60px); */
   text-overflow: ellipsis;
   overflow: hidden;
   white-space: nowrap;
@@ -304,7 +304,7 @@ export const TokenList = styled.div<{ $isClosing?: boolean }>`
   transform-origin: bottom center;
   scrollbar-width: thin;
   scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
-  padding: 1rem 0;
+  padding: 1rem;
 
   @media (min-width: 481px) {
     position: absolute;
@@ -317,7 +317,7 @@ export const TokenList = styled.div<{ $isClosing?: boolean }>`
     max-height: 300px;
     transform-origin: top center;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-    padding: 0.5rem 0;
+    padding: 0.75rem;
   }
 
   &::-webkit-scrollbar {

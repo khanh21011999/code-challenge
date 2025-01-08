@@ -307,11 +307,10 @@ const CurrencySwap: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   fontSize: "16px",
-                  margin: "8px",
-                  width: "calc(100% - 16px)",
+                  padding: "8px 16px",
+                  width: "100%",
                   background: "rgba(255, 255, 255, 0.1)",
                   borderRadius: "8px",
-                  padding: "8px",
                 }}
                 onClick={(e) => e.stopPropagation()}
               />
@@ -397,11 +396,10 @@ const CurrencySwap: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 style={{
                   fontSize: "16px",
-                  margin: "8px",
-                  width: "calc(100% - 16px)",
+                  padding: "8px 16px",
+                  width: "100%",
                   background: "rgba(255, 255, 255, 0.1)",
                   borderRadius: "8px",
-                  padding: "8px",
                 }}
                 onClick={(e) => e.stopPropagation()}
               />
